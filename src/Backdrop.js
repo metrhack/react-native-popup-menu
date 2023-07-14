@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { View, StyleSheet, TouchableWithoutFeedback, Animated } from 'react-native';
+import { View, StyleSheet, Pressable, Animated } from 'react-native';
 import { OPEN_ANIM_DURATION, CLOSE_ANIM_DURATION, USE_NATIVE_DRIVER } from './constants';
 
-class Backdrop extends Component {
+class Backdrop extends Pressable {
 
   constructor(...args) {
     super(...args);
@@ -33,19 +33,15 @@ class Backdrop extends Component {
   render() {
     const { onPress, style } = this.props;
     return (
-      <TouchableWithoutFeedback onPress={onPress}>
+      <Pressable onPress={onPress}>
         <Animated.View style={[styles.fullscreen, { opacity: this.fadeAnim }]}>
           <View style={[styles.fullscreen, style]} />
         </Animated.View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   }
 
 }
-
-Backdrop.propTypes = {
-  onPress: PropTypes.func.isRequired,
-};
 
 const styles = StyleSheet.create({
   fullscreen: {
