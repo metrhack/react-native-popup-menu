@@ -1900,8 +1900,15 @@
 
         this._invalidateTriggerLayouts();
 
-        this._isMenuClosing = true;
-        return Promise.all([hideMenu, hideBackdrop]).then(function () {
+        this._isMenuClosing = true; // rAF-driven animations on web pause while the tab is asleep; without this
+        // fallback the close promise never settles and _isMenuClosing latches true,
+        // permanently freezing the menu placeholder (shouldComponentUpdate returns false)
+
+        var closeAnimations = Promise.all([hideMenu, hideBackdrop]);
+        var closeTimeout = new Promise(function (resolve) {
+          return setTimeout(resolve, 6000);
+        });
+        return Promise.race([closeAnimations, closeTimeout]).then(function () {
           _this3._isMenuClosing = false;
         }).catch(function (err) {
           _this3._isMenuClosing = false;

@@ -133,7 +133,12 @@ export default class MenuProvider extends Component {
     const hideBackdrop = this.backdropRef && this.backdropRef.close();
     this._invalidateTriggerLayouts();
     this._isMenuClosing = true;
-    return Promise.all([hideMenu, hideBackdrop])
+    // rAF-driven animations on web pause while the tab is asleep; without this
+    // fallback the close promise never settles and _isMenuClosing latches true,
+    // permanently freezing the menu placeholder (shouldComponentUpdate returns false)
+    const closeAnimations = Promise.all([hideMenu, hideBackdrop]);
+    const closeTimeout = new Promise(resolve => setTimeout(resolve, 6000));
+    return Promise.race([closeAnimations, closeTimeout])
       .then(() => {
         this._isMenuClosing = false;
       })
